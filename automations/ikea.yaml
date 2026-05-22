@@ -1,0 +1,127 @@
+# Auto_IKEA_Bedroom_Light_Control
+# 卧室宜家遥控器：上键开浴室LED/长按调亮，下键关浴室LED/长按调暗
+# 左键切换左床头灯，右键切换右床头灯
+- id: 'auto_ikea_bedroom_light_control'
+  alias: Auto_IKEA_Bedroom_Light_Control
+  description: '卧室宜家四键遥控器控制左右床头灯和浴室LED'
+  use_blueprint:
+    path: Malte/zha-ikea-four-button-remote-styrbar-for-lights-e2001-e2002.yaml
+    input:
+      remote: cdb1113d5f83ef1d2f4828a1d33bc51d
+      light:
+        entity_id: light.ikea_of_sweden_silverglans_ip44_led_driver_light
+      brightness: 50
+      force_brightness: false
+      button_left_short:
+        - action: light.toggle
+          target:
+            entity_id: light.bedside_lamp_rgbww_light # Bedside-Lamp-Left
+      button_right_short:
+        - action: light.toggle
+          target:
+            entity_id: light.sonoff_main # Bedside-Lamp-Right
+
+# Auto_IKEA_Bedroom_Player_Control
+# 卧室宜家遥控器 (E2313) 播放器控制
+# 按键分配：
+#   上键短按 (turn_on)   → 音量加
+#   下键短按 (turn_off)  → 音量减
+#   上键长按 (turn_on_hold)  → 切换播放/暂停
+#   下键长按 (turn_off_hold) → 切换播放器电源（开/关）
+- id: 'auto_ikea_bedroom_player_control'
+  alias: Auto_IKEA_Bedroom_Player_Control
+  description: '宜家遥控器控制播放器音量、电源和播放/暂停'
+  triggers:
+    # 上键短按：音量加
+    - trigger: device
+      id: volume_up
+      device_id: cdb1113d5f83ef1d2f4828a1d33bc51d
+      domain: zha
+      type: remote_button_short_press
+      subtype: turn_on
+    # 下键短按：音量减
+    - trigger: device
+      id: volume_down
+      device_id: cdb1113d5f83ef1d2f4828a1d33bc51d
+      domain: zha
+      type: remote_button_short_press
+      subtype: turn_off
+    # 下键长按：切换播放器电源
+    - trigger: device
+      id: player_power
+      device_id: cdb1113d5f83ef1d2f4828a1d33bc51d
+      domain: zha
+      type: remote_button_long_press
+      subtype: dim_down
+    # 上键长按：切换播放/暂停
+    - trigger: device
+      id: play_toggle
+      device_id: cdb1113d5f83ef1d2f4828a1d33bc51d
+      domain: zha
+      type: remote_button_long_press
+      subtype: dim_up
+  conditions: []
+  actions:
+    - choose:
+        # 上键短按 → 音量加
+        - conditions:
+            - condition: trigger
+              id: volume_up
+          sequence:
+            - action: media_player.volume_up
+              data: {}
+              target:
+                entity_id: media_player.rpi_squeeze
+        # 下键短按 → 音量减
+        - conditions:
+            - condition: trigger
+              id: volume_down
+          sequence:
+            - action: media_player.volume_down
+              data: {}
+              target:
+                entity_id: media_player.rpi_squeeze
+        # 下键长按 → 切换播放器电源
+        - conditions:
+            - condition: trigger
+              id: player_power
+          sequence:
+            - action: media_player.toggle
+              data: {}
+              target:
+                entity_id: media_player.rpi_squeeze
+        # 上键长按 → 切换播放/暂停
+        - conditions:
+            - condition: trigger
+              id: play_toggle
+          sequence:
+            - action: media_player.media_play_pause
+              data: {}
+              target:
+                entity_id: media_player.rpi_squeeze
+  mode: single
+
+# Auto_IKEA_Livingroom_Light_Control
+# 客厅宜家遥控器：上键开灯/长按调亮客厅LED，下键关灯/长按调暗客厅LED
+# 左键切换卧室左边床头灯，右键切换卧室右边床头灯
+- id: 'auto_ikea_livingroom_light_control'
+  alias: Auto_IKEA_Livingroom_Light_Control
+  description: '客厅宜家四键遥控器'
+  use_blueprint:
+    path: Malte/zha-ikea-four-button-remote-styrbar-for-lights-e2001-e2002.yaml
+    input:
+      remote: a7a079ae199587a6ce8eb03296530610 # Device: IKEA_Controller_Livingroom [Livingroom-Floor-2]
+      light:
+        entity_id: light.ikea_of_sweden_tradfri_bulb_e26_ws_globe_1100lm # IKEA_Bulb_E26 [Livingroom-Floor-2]
+      brightness: 50
+      force_brightness: false
+      button_left_short:
+        - action: light.toggle
+          target:
+            entity_id: light.bedside_lamp_rgbww_light # Bedside-Lamp-Left
+      button_right_short:
+        - action: light.toggle
+          target:
+            entity_id: light.sonoff_main # Bedside-Lamp-Right
+      button_left_long: []
+      button_right_long: []

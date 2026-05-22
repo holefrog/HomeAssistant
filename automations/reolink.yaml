@@ -1,0 +1,14 @@
+- id: doorbell_show_camera
+  alias: Doorbell_Show_Camera
+  description: "通过 Reolink webhook 触发，在小爱音箱上显示门铃画面"
+  trigger:
+    - platform: webhook
+      webhook_id: reolink_doorbell
+  condition:
+    - condition: template
+      value_template: "{{ trigger.json.alarm.type == 'VISITOR' }}"
+  action:
+    - action: script.doorbell_show
+    - delay:
+        seconds: 30
+    - action: script.doorbell_close

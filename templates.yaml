@@ -1,0 +1,149 @@
+# v2
+- binary_sensor:
+############################################################
+    # 1. 全局门窗状态汇总
+    ############################################################
+    - name: "Global Door Status"
+      unique_id: "ab03df46062349c1830355749290e707"
+      device_class: opening
+      state: >
+        {% set sensors = expand(label_entities('Security Opening'))
+          | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor'])
+          | selectattr('state', 'eq', 'on') | list %}
+        {{ sensors | count > 0 }}
+      attributes:
+        count: >
+          {{ expand(label_entities('Security Opening')) 
+             | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor']) 
+             | selectattr('state', 'eq', 'on') | list | count }}
+        Data: >-
+          {% set lst = expand(label_entities('Security Opening')) 
+             | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor']) 
+             | selectattr('state', 'eq', 'on') | list %}
+          {% if lst | count > 0 %}
+            {% set output = namespace(data=[]) %}
+            {% for s in lst %}
+              {% set output.data = output.data + [ "&emsp;&emsp;- " ~ (area_name(s.entity_id) or 'Unknown') ~ ": " ~ s.name ~ " Open" ] %}
+            {% endfor %}
+            {{ output.data | join('<br>') }}<br>
+          {% else %}OK{% endif %}
+          
+
+    ############################################################
+    # 2. 全局火灾 / 高温状态汇总
+    ############################################################
+    - name: "Global Fire Status"
+      unique_id: "b15c020c670efa1ba31f0d3c9b649f77"
+      device_class: problem
+      state: >
+        {% set AlarmTemp = 100 %}
+        {% set sensors = expand(label_entities('Security Fire')) | list %}
+        {% set count = namespace(value=0) %}
+        {% for s in sensors %}
+          {% if s.state | is_number and s.state | float > AlarmTemp %}
+            {% set count.value = count.value + 1 %}
+          {% elif s.state == 'on' %}
+            {% set count.value = count.value + 1 %}
+          {% endif %}
+        {% endfor %}
+        {{ count.value > 0 }}
+      attributes:
+        count: >
+          {% set AlarmTemp = 100 %}
+          {% set sensors = expand(label_entities('Security Fire')) | list %}
+          {% set c = namespace(value=0) %}
+          {% for s in sensors %}
+            {% if s.state | is_number and s.state | float > AlarmTemp %}
+              {% set c.value = c.value + 1 %}
+            {% elif s.state == 'on' %}
+              {% set c.value = c.value + 1 %}
+            {% endif %}
+          {% endfor %}
+          {{ c.value }}
+        Data: >
+          {% set AlarmTemp = 100 %}
+          {% set output = namespace(data=[]) %}
+          {% set sensors = expand(label_entities('Security Fire')) %}
+          {% for s in sensors %}
+            {% if s.state | is_number and s.state | float > AlarmTemp %}
+              {% set output.data = output.data + [ "&emsp;&emsp;- " + (area_name(s.entity_id) or 'Unknown Area') + ": " + s.name + " " + s.state + "°C" ] %}
+            {% elif s.state == 'on' %}
+              {% set output.data = output.data + [ "&emsp;&emsp;- " + (area_name(s.entity_id) or 'Unknown Area') + ": " + s.name + " Fire" ] %}
+            {% endif %}
+          {% endfor %}
+          {{ output.data | join('<br>') if output.data | count > 0 else 'OK' }}
+
+
+    ############################################################
+    # 3. 全局漏水状态汇总
+    ############################################################
+    - name: "Global Water Leak Status"
+      unique_id: "c18303557492ab03df0e707460623499"
+      device_class: moisture
+      state: >
+        {% set sensors = expand(label_entities('Security Water Leak'))
+          | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
+        {{ sensors | count > 0 }}
+      attributes:
+        count: >
+          {{ expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list | count }}
+        Data: >-
+          {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
+          {% if lst | count > 0 %}
+            {% set output = namespace(data=[]) %}
+            {% for s in lst %}
+              {% set output.data = output.data + [ "&emsp;&emsp;- " ~ (area_name(s.entity_id) or 'Unknown') ~ ": " ~ s.name ~ " Leaking" ] %}
+            {% endfor %}
+            {{ output.data | join('<br>') }}<br>
+          {% else %}OK{% endif %}
+          
+
+    ############################################################
+    # 4. 全局安防问题汇总 (解耦后端)
+    ############################################################
+    - name: "Security Issue Summary"
+      unique_id: "sec_issue_sum_20260520"
+      device_class: problem
+      state: >
+        {% set door = state_attr('binary_sensor.global_door_status', 'count') | default(0) | int %}
+        {% set fire = state_attr('binary_sensor.global_fire_status', 'count') | default(0) | int %}
+        {% set water = state_attr('binary_sensor.global_water_leak_status', 'count') | default(0) | int %}
+        {% set garage = 1 if is_state('binary_sensor.garage_door_sensor', 'on') else 0 %}
+        {% set gun_cabinet = 1 if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') else 0 %}
+        {{ (door + fire + water + garage + gun_cabinet) > 0 }}
+      attributes:
+        message: >
+          {% set door = state_attr('binary_sensor.global_door_status', 'count') | default(0) | int %}
+          {% set fire = state_attr('binary_sensor.global_fire_status', 'count') | default(0) | int %}
+          {% set water = state_attr('binary_sensor.global_water_leak_status', 'count') | default(0) | int %}
+          {% set garage = 1 if is_state('binary_sensor.garage_door_sensor', 'on') else 0 %}
+          {% set gun_cabinet = 1 if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') else 0 %}
+          
+          {% if (door + fire + water + garage + gun_cabinet) > 0 %}
+            <center><h2><font color="red">Found Security Issue</font></h2></center>
+            
+            {% if is_state('binary_sensor.global_door_status', 'on') or is_state('binary_sensor.garage_door_sensor', 'on') or is_state('binary_sensor.gun_cabinet_door_sensor', 'on') %}
+            🚪 <b>Door open:</b><br>
+            {% if is_state('binary_sensor.global_door_status', 'on') %}
+            {{ state_attr('binary_sensor.global_door_status', 'Data') }}
+            {% endif %}
+            {% if is_state('binary_sensor.garage_door_sensor', 'on') %}
+            &emsp;&emsp;- Garage: Garage Door Sensor Open<br>
+            {% endif %}
+            {% if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') %}
+            &emsp;&emsp;- Gun Cabinet: Gun Cabinet Door Open<br>
+            {% endif %}
+            {% endif %}
+            
+            {% if is_state('binary_sensor.global_fire_status', 'on') %}
+            🔥 <b>Fire alarm:</b><br>
+            {{ state_attr('binary_sensor.global_fire_status', 'Data') }}
+            {% endif %}
+            
+            {% if is_state('binary_sensor.global_water_leak_status', 'on') %}
+            💧 <b>Water leak alarm:</b><br>
+            {{ state_attr('binary_sensor.global_water_leak_status', 'Data') }}
+            {% endif %}
+          {% else %}
+            <center><h2><font color="green">All Secure</font></h2></center>
+          {% endif %}

@@ -1,0 +1,11 @@
+doorbell_show:
+  alias: Doorbell_Show
+  icon: mdi:doorbell-video
+  sequence:
+    - action: shell_command.doorbell_show
+
+doorbell_close:
+  alias: Doorbell_Close 
+  icon: mdi:close-box
+  sequence:
+    - action: shell_command.doorbell_close

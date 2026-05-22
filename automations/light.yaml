@@ -1,0 +1,83 @@
+# 卧室台灯：日落时开启，凌晨 00:30 关闭
+- id: 'auto_bedside_lamp_schedule'
+  alias: 'Auto_Bedside_Lamp_Schedule'
+  description: 日落时打开床头灯 / 凌晨 00:30 关闭
+  mode: single
+  triggers:
+  - trigger: sun
+    event: sunset
+    offset: '-1:00:00'
+    id: trigger_sun
+  - trigger: time
+    at: 00:30:00
+    id: trigger_time
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: trigger_sun
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.bedside_lamp_rgbww_light
+        data:
+          color_temp: 315
+          brightness_pct: 30
+    - conditions:
+      - condition: trigger
+        id: trigger_time
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.bedside_lamp_rgbww_light
+        data: {}
+
+
+
+- id: 'motion_lights_router_led'
+  alias: 'Auto_Motion_Router_LED'
+  description: '人来亮灯，人走延时关灯（楼层1和楼层2合并）'
+  mode: parallel # 必须使用 parallel，防止两个楼层同时触发时互相阻塞
+  max: 10
+  triggers:
+    # 触发条件 1：任何一个传感器检测到人体
+    - trigger: state
+      entity_id: 
+        - binary_sensor.lumi_motion_floor_1
+        - binary_sensor.lumi_motion_floor_2
+      from: 'off'
+      to: 'on'
+    # 触发条件 2：任何一个传感器两分钟内未检测到人体
+    - trigger: state
+      entity_id: 
+        - binary_sensor.lumi_motion_floor_1
+        - binary_sensor.lumi_motion_floor_2
+      from: 'on'
+      to: 'off'
+      for:
+        minutes: 2 # 延时关灯的时间参数
+  actions:
+    # 定义局部变量，将传感器与需要控制的灯光绑定
+    - variables:
+        light_map:
+          binary_sensor.lumi_motion_floor_1: light.xiaomi_gateway_0x7c49eb924bd7_light_0x7c49eb924bd7
+          binary_sensor.lumi_motion_floor_2: light.xiaomi_gateway_0x7c49eb93b068_light_0x7c49eb93b068
+
+        target_light: "{{ light_map[trigger.entity_id] }}"
+    - choose:
+        # 如果触发事件是从 off 变成 on (检测到人)
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.to_state.state == 'on' }}"
+          sequence:
+            - action: light.turn_on
+              target:
+                entity_id: "{{ target_light }}"
+        # 如果触发事件是从 on 变成 off (超时无人)
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.to_state.state == 'off' }}"
+          sequence:
+            - action: light.turn_off
+              target:
+                entity_id: "{{ target_light }}"

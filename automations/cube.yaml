@@ -1,0 +1,35 @@
+# 魔方控制器：控制卧室台灯和树莓派播放器
+- id: 'auto_cube_control_bedlamp_and_rpi'
+  alias: 'Auto_Cube_control Bedlamp_and_RPI'
+  description: 'Blueprint: https://community.home-assistant.io/t/aqara-magic-cube-zha-51-actions/270829'
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      remote: 0e14045db673ef47338716e61b080af4 # Device: LUMI lumi.sensor_cube.aqgl01
+      cube_shake:
+      - action: light.toggle
+        target:
+          entity_id: light.bedside_lamp_rgbww_light
+      rotate_right:
+      - action: media_player.volume_up
+        data: {}
+        target:
+          entity_id: media_player.rpi_squeeze
+      rotate_left:
+      - action: media_player.volume_down
+        data: {}
+        target:
+          entity_id: media_player.rpi_squeeze
+      one_to_one: []
+      knock_any_side: true
+      cube_knock_any:
+      - action: media_player.toggle
+        data: {}
+        target:
+          entity_id: media_player.rpi_squeeze
+      flip_90: true
+      cube_flip_90:
+      - action: media_player.media_play_pause
+        data: {}
+        target:
+          entity_id: media_player.rpi_squeeze

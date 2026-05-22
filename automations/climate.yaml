@@ -1,0 +1,50 @@
+# 环境控制：根据厨房门状态自动控制暖通空调 (HVAC)
+- id: 'auto_kitchen_door_hvac_control'
+  alias: Auto_Kitchen_Door_HVAC_Control
+  description: '根据厨房门状态控制暖通空调（打开超过180秒则关闭，关闭超过120秒且满足条件则开启制热）'
+  mode: restart
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f
+    to: 'on'
+    for:
+      seconds: 180
+  - trigger: state
+    entity_id: binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f
+    to: 'off'
+    for:
+      seconds: 120
+  actions:
+  - action: system_log.write
+    data:
+      message: '[HVAC] Automation started: Door status={{ states("binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f") }}'
+      level: debug
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f
+        state: 'on'
+      sequence:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          hvac_mode: 'off'
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f
+        state: 'off'
+      - condition: template
+        value_template: '{{ state_attr("climate.thermostat", "current_temperature") | float(0) < 20 }}'
+      - condition: template
+        value_template: '{% set m = now().month %} {{ m >= 10 or m <= 3 }}'
+      sequence:
+      - action: climate.set_hvac_mode
+        target:
+          entity_id: climate.thermostat
+        data:
+          hvac_mode: heat
+  - action: system_log.write
+    data:
+      message: '[HVAC] Automation ended: Door status={{ states("binary_sensor.door_and_window_sensor_4f9f_contact_sensor_4f9f") }}'
+      level: debug

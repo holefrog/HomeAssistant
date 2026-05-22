@@ -1,0 +1,315 @@
+# =============================================================
+# automations/alarm.yaml
+# 安防报警自动化集合
+#
+# 依赖 script：
+#   - script.alarm_trigger_all  — 并行触发灯光+声音（scripts/security.yaml）
+#   - script.alarm_clear_all    — 停止全部声光+置位 input_clear（scripts/security.yaml）
+#
+# 报警解除机制：
+#   所有报警 automation 均以 input_boolean.input_clear 为退出条件。
+#   input_boolean.input_clear 由 "Handle actionable notification" 统一置位，
+#   60 秒后自动复位，为下次报警做准备。
+#
+# 布防条件：
+#   所有报警均仅在 input_boolean.arm_alarm 为 on 时触发。
+# =============================================================
+
+
+# -------------------------------------------------------------
+# 报警：门窗被打开（仅在离家布防模式下触发）
+# -------------------------------------------------------------
+- id: 'alarm_door_window_open'
+  alias: 'Alarm_Door_Window_open'
+  description: '门窗被打开报警（仅在离家布防模式下触发）'
+  mode: restart
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.global_door_status
+    attribute: count
+  conditions:
+  - condition: state
+    entity_id: input_boolean.arm_alarm
+    state: 'on'
+  - condition: template
+    value_template: >
+      {{ trigger.from_state is not none and trigger.to_state is not none and
+         trigger.to_state.attributes.count | int(0) > trigger.from_state.attributes.count | int(0) }}
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.input_clear
+  - repeat:
+      until:
+      - condition: state
+        entity_id: input_boolean.input_clear
+        state: 'on'
+      sequence:
+      - action: notify.group_phone
+        data:
+          title: Door or window opened!!!
+          message: >
+            {% set lst = expand(label_entities('Security Opening')) | selectattr('state', 'eq', 'on') | list %}
+            {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is open!
+            {% endfor %}{% else %}Door or window open detected, but specific sensor name is unavailable.{% endif %}
+          data:
+            tag: 'security_alarm'
+            actions:
+            - action: CONFIRM_CLEAR
+              title: ✅ Click to clear alarm [Door/Window open]
+      - action: persistent_notification.create
+        data:
+          title: Door or window opened!!!
+          message: >
+            {% set lst = expand(label_entities('Security Opening')) | selectattr('state', 'eq', 'on') | list %}
+            {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is open!
+            {% endfor %}{% else %}Door or window open detected, but specific sensor name is unavailable.{% endif %}
+      - action: script.alarm_trigger_all
+      - delay:
+          seconds: 30
+
+
+# -------------------------------------------------------------
+# 摄像机：楼梯间门打开时拍照录像（仅在离家布防模式下触发）
+# -------------------------------------------------------------
+- id: 'camera_record_when_firearm_cabinet_door_is_open'
+  alias: 'Camera_Record_when_firearm_cabinet_door_is_open'
+  description: '枪柜门打开时开始连拍并保存（仅在离家布防模式下触发）'
+  mode: single
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.gun_cabinet_door_sensor
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.arm_alarm
+    state: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.input_clear
+  - repeat:
+      until:
+      - condition: state
+        entity_id: input_boolean.input_clear
+        state: 'on'
+      sequence:
+      - variables:
+          picname: gun-{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg
+      - delay:
+          seconds: 1
+      - action: camera.snapshot
+        data:
+          filename: /config/www/record/{{ picname }}
+        target:
+          entity_id: camera.gun_cabinet_camera
+      - action: notify.group_phone
+        data:
+          title: Cabinet door is open!!!
+          message: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+          data:
+            tag: 'gun_safe_camera'
+            persistent: true
+            sticky: true
+            image: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+            actions:
+            - action: CONFIRM_CLEAR
+              title: ✅ Click to clear alarm [Cabinet door open]
+      - action: persistent_notification.create
+        data:
+          title: Cabinet door is open!!!
+          notification_id: gun_safe_camera
+          message: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+      - action: script.alarm_trigger_all
+      - repeat:
+          while:
+          - condition: template
+            value_template: '{{ repeat.index <= 29 }}'
+          - condition: state
+            entity_id: input_boolean.input_clear
+            state: 'off'
+          sequence:
+          - variables:
+              picname_loop: gun-{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg
+          - delay:
+              seconds: 1
+          - action: camera.snapshot
+            data:
+              filename: /config/www/record/{{ picname_loop }}
+            target:
+              entity_id: camera.gun_cabinet_camera
+
+
+# -------------------------------------------------------------
+# 报警：枪柜震动报警（仅在离家布防模式下触发）
+# -------------------------------------------------------------
+- id: 'alarm_gun_safe_opened'
+  alias: 'Alarm_Gun_safe_opened!!!'
+  description: '枪柜内部震动报警（仅在离家布防模式下触发）'
+  mode: restart
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.gun_safe_vibration_inside_sensor
+    - binary_sensor.gun_safe_vibration_outside_sensor
+    from: 'off'
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.arm_alarm
+    state: 'on'
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.input_clear
+  - repeat:
+      until:
+      - condition: state
+        entity_id: input_boolean.input_clear
+        state: 'on'
+      sequence:
+      - action: notify.group_phone
+        data:
+          title: Alarm
+          message: Gun safe has been opened!!!
+          data:
+            tag: 'security_alarm'
+            actions:
+            - action: CONFIRM_CLEAR
+              title: ✅ Click to clear alarm [Gun safe opened]
+      - action: persistent_notification.create
+        data:
+          title: Alarm
+          message: Gun safe has been opened!!!
+      - action: script.alarm_trigger_all
+      - delay:
+          seconds: 30
+
+
+# -------------------------------------------------------------
+# 报警：漏水或火灾报警 (随时触发，不设置条件)
+# -------------------------------------------------------------
+- id: 'alarm_water_leak_on_fire'
+  alias: 'Alarm_Water_Leak_On_Fire'
+  description: '漏水或火灾报警！！！'
+  mode: restart
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.global_water_leak_status
+    attribute: count
+    id: trigger_water
+  - trigger: state
+    entity_id: binary_sensor.global_fire_status
+    attribute: count
+    id: trigger_fire
+  conditions:
+  - condition: template
+    value_template: >
+      {{ trigger.from_state is not none and trigger.to_state is not none and
+         trigger.to_state.attributes.count | int(0) > trigger.from_state.attributes.count | int(0) }}
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.input_clear
+  - repeat:
+      until:
+      - condition: state
+        entity_id: input_boolean.input_clear
+        state: 'on'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: trigger_water
+          sequence:
+          - action: notify.group_phone
+            data:
+              title: Water leak alarm!!!
+              message: >
+                {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
+                {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is leaking!
+                {% endfor %}{% else %}Water leak detected, but specific sensor name is unavailable.{% endif %}
+              data:
+                tag: 'security_alarm'
+                persistent: true
+                sticky: true
+                actions:
+                - action: CONFIRM_CLEAR
+                  title: ✅ Click to clear alarm [Water leak]
+          - action: persistent_notification.create
+            data:
+              title: Water leak alarm!!!
+              message: >
+                {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
+                {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is leaking!
+                {% endfor %}{% else %}Water leak detected, but specific sensor name is unavailable.{% endif %}
+        - conditions:
+          - condition: trigger
+            id: trigger_fire
+          sequence:
+          - action: notify.group_phone
+            data:
+              title: Fire alarm!!!
+              message: '{{ state_attr("binary_sensor.global_fire_status", "Data") }}'
+              data:
+                tag: 'security_alarm'
+                persistent: true
+                sticky: true
+                actions:
+                - action: CONFIRM_CLEAR
+                  title: ✅ Click to clear alarm [Fire]
+          - action: persistent_notification.create
+            data:
+              title: Fire alarm!!!
+              message: '{{ state_attr("binary_sensor.global_fire_status", "Data") }}'
+      - action: script.alarm_trigger_all
+      - delay:
+          seconds: 30
+
+
+
+
+# -------------------------------------------------------------
+# 辅助：处理手机端通知点击"解除报警"的操作
+# -------------------------------------------------------------
+- id: 'alarm_handle_actionable_notification'
+  alias: 'Alarm_Handle_actionable_notification'
+  description: '手机端点击解除报警动作或前端关闭通知后，清除报警状态'
+  mode: restart
+  triggers:
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: CONFIRM_CLEAR
+  - trigger: event
+    event_type: mobile_app_notification_cleared
+    event_data:
+      tag: security_alarm
+  - trigger: event
+    event_type: mobile_app_notification_cleared
+    event_data:
+      tag: gun_safe_camera
+  - trigger: persistent_notification
+    update_type: removed
+    notification_id: security_alarm
+  - trigger: persistent_notification
+    update_type: removed
+    notification_id: gun_safe_camera
+  conditions: []
+  actions:
+  # 停止全部声光，置位 input_clear，触发各报警循环退出
+  - action: script.alarm_clear_all
+  - action: notify.group_phone
+    data:
+      title: Notice
+      message: The alarm has been manually cleared.
+  - action: persistent_notification.create
+    data:
+      title: Notice
+      message: The alarm has been manually cleared.
+  # 60 秒后复位 input_clear，为下次报警做准备
+  - delay:
+      seconds: 60
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.input_clear

@@ -1,0 +1,29 @@
+# 提醒：门长时间未关
+- id: 'reminder_long_door_open'
+  alias: 'Reminder_Long_door_open'
+  description: '门长时间未关时发送提醒通知'
+  mode: single
+  max: 10
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.garage_door_sensor
+    - binary_sensor.door_contact_sensor_4f9f
+    - binary_sensor.door_contact_sensor_4ee1
+    from: 'off'
+    to: 'on'
+    for:
+      minutes: 30
+  conditions: []
+  actions:
+  - repeat:
+      until:
+      - condition: template
+        value_template: '{{ is_state(trigger.entity_id, "off") }}'
+      sequence:
+      - action: notify.group_phone
+        data:
+          title: '{{ area_name(trigger.entity_id) }}'
+          message: The door has been open for a long time.
+      - delay:
+          minutes: 10

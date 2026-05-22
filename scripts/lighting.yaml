@@ -1,0 +1,59 @@
+# 灯光控制：闪烁所有灯组 (闪烁 5 次)
+# mode 设为 restart，允许 alarm_clear_all 通过 script.turn_off 强制中断
+flash_light_group_all:
+  alias: Flash light_group_all
+  mode: restart
+  sequence:
+    - repeat:
+        count: '5'
+        sequence:
+          - action: light.turn_on
+            continue_on_error: true
+            target:
+              entity_id: light.group_light_all
+          - delay:
+              seconds: 2
+          - action: light.turn_off
+            continue_on_error: true
+            target:
+              entity_id: light.group_light_all
+          - delay:
+              seconds: 5
+
+# 灯光控制：闪烁 LED 灯组 (闪烁 5 次红色，后恢复指定颜色)
+flash_light_group_led:
+  alias: Flash light_group_led
+  mode: single
+  sequence:
+    - repeat:
+        count: '5'
+        sequence:
+          - action: light.turn_on
+            continue_on_error: true
+            data:
+              brightness_pct: 100
+              color_name: red
+            target:
+              entity_id: light.group_light_led
+          - delay:
+              seconds: 2
+          - action: light.turn_off
+            continue_on_error: true
+            target:
+              entity_id: light.group_light_led
+          - delay:
+              seconds: 5
+    - action: light.turn_on
+      continue_on_error: true
+      data:
+        brightness_pct: 100
+        rgb_color: [255, 194, 145]
+      target:
+        entity_id: light.group_light_led
+    - delay:
+        seconds: 5
+    - action: light.turn_off
+      continue_on_error: true
+      target:
+        entity_id: light.group_light_led
+      data: {}

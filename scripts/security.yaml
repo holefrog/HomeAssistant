@@ -1,0 +1,82 @@
+# =============================================================
+# scripts/security.yaml
+# 安防相关脚本
+#
+# 公开接口：
+#   alarm_trigger_all  — 报警触发（灯光+声音并行）
+#   alarm_clear_all    — 报警解除（停止全部声光）
+#   pre_arm_check      — 巡检安防传感器状态
+#
+# 内部调用链：
+#   alarm_trigger_all
+#     ├── script.flash_light_group_all
+#     ├── script.play_squeeze
+#     └── script.lumi_alarm_play_all
+#
+#   alarm_clear_all
+#     ├── input_boolean.turn_on (input_clear)
+#     ├── script.turn_off flash_light_group_all
+#     ├── light.turn_off group_light_all
+#     ├── media_player.media_stop group_player
+#     └── script.lumi_alarm_stop_all
+# =============================================================
+
+
+# 报警：切换布防状态并播放语音
+# 参数：无
+toggle_arm_alarm:
+  alias: Toggle Arm Alarm and Play Sound
+  mode: single
+  sequence:
+    - action: input_boolean.toggle
+      target:
+        entity_id: input_boolean.arm_alarm
+    - action: script.play_squeeze
+      data:
+        data_media: "{{ states('input_text.media_root') | replace('unknown', 'http://192.168.50.210:8123/local/media/') }}{{ 'armed.mp3' if is_state('input_boolean.arm_alarm', 'on') else 'disarmed.mp3' }}"
+    - action: script.lumi_alarm_play_all
+      data:
+        data_file: "{{ 'arm.mp3' if is_state('input_boolean.arm_alarm', 'on') else 'disarm.mp3' }}"
+
+
+# 报警触发：并行启动灯光+Squeezebox+Lumi 全部网关
+# 供 automations/alarm.yaml 中各报警循环调用
+alarm_trigger_all:
+  alias: Alarm Trigger All
+  mode: restart
+  sequence:
+    - parallel:
+        - action: script.flash_light_group_all
+          data: {}
+        - action: script.play_squeeze
+          data:
+            data_media: "{{ states('input_text.media_root') | replace('unknown', 'http://homeassistant.local:8123/local/media/') }}alarm.mp3"
+        - action: script.lumi_alarm_play_all
+          data:
+            data_file: "alarm.mp3"
+
+
+# 报警解除：停止全部声光，置位 input_clear
+# 由 Handle actionable notification 调用
+alarm_clear_all:
+  alias: Alarm Clear All
+  mode: single
+  sequence:
+    # 置位退出标志，触发各报警 repeat 循环退出
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.input_clear
+    # 直接 kill 闪灯脚本实例，再关灯
+    - action: script.turn_off
+      target:
+        entity_id: script.flash_light_group_all
+    # 并行下发耗时的网络控制指令（关灯、停音乐、停网关），实现无延迟同步停止
+    - parallel:
+        - action: light.turn_off
+          target:
+            entity_id: light.group_light_all
+        - action: media_player.media_stop
+          continue_on_error: true
+          target:
+            entity_id: media_player.group_player
+        - action: script.lumi_alarm_stop_all

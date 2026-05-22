@@ -1,0 +1,25 @@
+# 忽略项目根目录下的所有文件和目录
+/*
+
+# 允许上传根目录下的特定扩展名文件
+!/*.py
+!/*.yaml
+!/*.sh
+
+# 排除特定的 yaml 文件
+/configuration.yaml
+
+
+# 允许上传 .gitignore 文件自身（建议保留）
+!.gitignore
+
+# 允许上传特定的顶层目录（及其内部的所有内容）
+!/automations/
+!/blueprints/
+!/scripts/
+
+# 针对 www/media 的特殊处理机制：
+# 1. 放行 www 目录； 2. 忽略 www 目录下的所有内容； 3. 单独放行 www 目录下的 media 目录
+!/www/
+/www/*
+!/www/media/
