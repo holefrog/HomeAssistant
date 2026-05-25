@@ -6,18 +6,30 @@ if ! command -v adb >/dev/null 2>&1; then
 fi
 
 # 2. 定义常量配置
-DEVICE="192.168.50.180:5555"
+DEVICE_X08A="192.168.50.180:5555"
+DEVICE_SONY_TV="192.168.50.220:5555"
 RTSP_URL="rtsp://admin:XH*8eSPx@192.168.50.190:554/Preview_01_sub"
 VLC_ACTIVITY="org.videolan.vlc/org.videolan.vlc.gui.video.VideoPlayerActivity"
 INTENT_ACTION="android.intent.action.VIEW"
 KEYCODE_BACK=4
 
 # 连接设备
-adb connect "$DEVICE"
+adb connect "$DEVICE_X08A"
+adb connect "$DEVICE_SONY_TV"
+
+run_vlc() {
+    adb -s "$1" shell cmd activity start -n "$VLC_ACTIVITY" -a "$INTENT_ACTION" -d "$RTSP_URL" --ez "from_start" true
+}
+
+close_vlc() {
+    adb -s "$1" shell input keyevent "$KEYCODE_BACK"
+}
 
 # 3. 根据传入的参数执行对应的操作
 if [ "$1" = "show" ]; then
-    adb -s "$DEVICE" shell cmd activity start -n "$VLC_ACTIVITY" -a "$INTENT_ACTION" -d "$RTSP_URL" --ez "from_start" true
+    run_vlc "$DEVICE"
+    run_vlc "$DEVICE_SONY_TV"
 elif [ "$1" = "close" ]; then
-    adb -s "$DEVICE" shell input keyevent "$KEYCODE_BACK"
+    close_vlc "$DEVICE_X08A"
+    close_vlc "$DEVICE_SONY_TV"
 fi
