@@ -27,7 +27,7 @@ close_vlc() {
 
 # 3. 根据传入的参数执行对应的操作
 if [ "$1" = "show" ]; then
-    run_vlc "$DEVICE"
+    run_vlc "$DEVICE_X08A"
     run_vlc "$DEVICE_SONY_TV"
 elif [ "$1" = "close" ]; then
     close_vlc "$DEVICE_X08A"
