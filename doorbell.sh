@@ -19,9 +19,9 @@ adb connect "$DEVICE_X08A"
 adb connect "$DEVICE_SONY_TV"
 
 run_vlc() {
-    # 先调用 close 退回桌面，并等待1秒确保动画执行完毕
+    # 先调用 close 退回桌面，并等待200ms确保动画执行完毕
     close_vlc "$1"
-    sleep 1
+    sleep 0.2
     # 唤醒屏幕，强制打断 screensaver (屏保)
     adb -s "$1" shell input keyevent "$KEYCODE_WAKEUP"
     # 添加了 -f 0x10000000 (FLAG_ACTIVITY_NEW_TASK) 确保以全新独立全屏任务启动
