@@ -14,29 +14,28 @@ INTENT_ACTION="android.intent.action.VIEW"
 KEYCODE_HOME=3
 KEYCODE_WAKEUP=224
 
-# 连接设备
-adb connect "$DEVICE_X08A"
-adb connect "$DEVICE_SONY_TV"
-
 run_vlc() {
-    # 先调用 close 退回桌面，并等待200ms确保动画执行完毕
-    close_vlc "$1"
+    # 每次按需连接（静默执行，即便断线也能快速重连）
+    adb connect "$1" >/dev/null 2>&1
+    adb -s "$1" shell input keyevent "$KEYCODE_HOME"
     sleep 0.2
-    # 唤醒屏幕，强制打断 screensaver (屏保)
-    adb -s "$1" shell input keyevent "$KEYCODE_WAKEUP"
-    # 添加了 -f 0x10000000 (FLAG_ACTIVITY_NEW_TASK) 确保以全新独立全屏任务启动
-    adb -s "$1" shell cmd activity start -f 0x10000000 -n "$VLC_ACTIVITY" -a "$INTENT_ACTION" -d "$RTSP_URL" --ez "from_start" true
+    # 将多次 adb 通信合并为一次执行，降低网络延迟开销
+    adb -s "$1" shell "input keyevent $KEYCODE_WAKEUP && cmd activity start -f 0x10000000 -n '$VLC_ACTIVITY' -a '$INTENT_ACTION' -d '$RTSP_URL' --ez 'from_start' true"
 }
 
 close_vlc() {
+    adb connect "$1" >/dev/null 2>&1
     adb -s "$1" shell input keyevent "$KEYCODE_HOME"
 }
 
 # 3. 根据传入的参数执行对应的操作
 if [ "$1" = "show" ]; then
-    run_vlc "$DEVICE_X08A"
-    run_vlc "$DEVICE_SONY_TV"
+    # 使用 & 放入后台并发执行两台设备，最后 wait 同步退出
+    run_vlc "$DEVICE_X08A" &
+    run_vlc "$DEVICE_SONY_TV" &
+    wait
 elif [ "$1" = "close" ]; then
-    close_vlc "$DEVICE_X08A"
-    close_vlc "$DEVICE_SONY_TV"
+    close_vlc "$DEVICE_X08A" &
+    close_vlc "$DEVICE_SONY_TV" &
+    wait
 fi
