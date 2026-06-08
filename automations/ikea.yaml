@@ -15,7 +15,7 @@
       button_left_short:
         - action: light.toggle
           target:
-            entity_id: light.bedside_lamp_rgbww_light # Bedside-Lamp-Left
+            entity_id: light.bedroom_master_bedside_lamp_rgbww_light # Bedside-Lamp-Left
       button_right_short:
         - action: light.toggle
           target:
@@ -118,7 +118,7 @@
       button_left_short:
         - action: light.toggle
           target:
-            entity_id: light.bedside_lamp_rgbww_light # Bedside-Lamp-Left
+            entity_id: light.bedroom_master_bedside_lamp_rgbww_light # Bedside-Lamp-Left
       button_right_short:
         - action: light.toggle
           target:

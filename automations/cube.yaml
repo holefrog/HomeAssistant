@@ -9,7 +9,7 @@
       cube_shake:
       - action: light.toggle
         target:
-          entity_id: light.bedside_lamp_rgbww_light
+          entity_id: light.bedroom_master_bedside_lamp_rgbww_light
       rotate_right:
       - action: media_player.volume_up
         data: {}
