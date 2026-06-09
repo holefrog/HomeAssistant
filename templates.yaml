@@ -8,15 +8,15 @@
       device_class: opening
       state: >
         {% set sensors = expand(label_entities('Security Opening'))
-          | selectattr('state', 'eq', 'on') | list %}
+          | selectattr('state', 'in', ['on', 'open', 'Open', 'true']) | list %}
         {{ sensors | count > 0 }}
       attributes:
         count: >
           {{ expand(label_entities('Security Opening')) 
-             | selectattr('state', 'eq', 'on') | list | count }}
+             | selectattr('state', 'in', ['on', 'open', 'Open', 'true']) | list | count }}
         Data: >-
           {% set lst = expand(label_entities('Security Opening')) 
-             | selectattr('state', 'eq', 'on') | list %}
+             | selectattr('state', 'in', ['on', 'open', 'Open', 'true']) | list %}
           {% if lst | count > 0 %}
             {% set output = namespace(data=[]) %}
             {% for s in lst %}
