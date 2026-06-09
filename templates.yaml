@@ -8,17 +8,14 @@
       device_class: opening
       state: >
         {% set sensors = expand(label_entities('Security Opening'))
-          | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor'])
           | selectattr('state', 'eq', 'on') | list %}
         {{ sensors | count > 0 }}
       attributes:
         count: >
           {{ expand(label_entities('Security Opening')) 
-             | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor']) 
              | selectattr('state', 'eq', 'on') | list | count }}
         Data: >-
           {% set lst = expand(label_entities('Security Opening')) 
-             | rejectattr('entity_id', 'in', ['binary_sensor.garage_door_sensor', 'binary_sensor.gun_cabinet_door_sensor']) 
              | selectattr('state', 'eq', 'on') | list %}
           {% if lst | count > 0 %}
             {% set output = namespace(data=[]) %}
@@ -108,31 +105,19 @@
         {% set door = state_attr('binary_sensor.global_door_status', 'count') | default(0) | int %}
         {% set fire = state_attr('binary_sensor.global_fire_status', 'count') | default(0) | int %}
         {% set water = state_attr('binary_sensor.global_water_leak_status', 'count') | default(0) | int %}
-        {% set garage = 1 if is_state('binary_sensor.garage_door_sensor', 'on') else 0 %}
-        {% set gun_cabinet = 1 if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') else 0 %}
-        {{ (door + fire + water + garage + gun_cabinet) > 0 }}
+        {{ (door + fire + water) > 0 }}
       attributes:
         message: >
           {% set door = state_attr('binary_sensor.global_door_status', 'count') | default(0) | int %}
           {% set fire = state_attr('binary_sensor.global_fire_status', 'count') | default(0) | int %}
           {% set water = state_attr('binary_sensor.global_water_leak_status', 'count') | default(0) | int %}
-          {% set garage = 1 if is_state('binary_sensor.garage_door_sensor', 'on') else 0 %}
-          {% set gun_cabinet = 1 if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') else 0 %}
           
-          {% if (door + fire + water + garage + gun_cabinet) > 0 %}
+          {% if (door + fire + water) > 0 %}
             <center><h2><font color="red">Found Security Issue</font></h2></center>
             
-            {% if is_state('binary_sensor.global_door_status', 'on') or is_state('binary_sensor.garage_door_sensor', 'on') or is_state('binary_sensor.gun_cabinet_door_sensor', 'on') %}
-            🚪 <b>Door open:</b><br>
             {% if is_state('binary_sensor.global_door_status', 'on') %}
+            🚪 <b>Door open:</b><br>
             {{ state_attr('binary_sensor.global_door_status', 'Data') }}
-            {% endif %}
-            {% if is_state('binary_sensor.garage_door_sensor', 'on') %}
-            &emsp;&emsp;- Garage: Garage Door Sensor Open<br>
-            {% endif %}
-            {% if is_state('binary_sensor.gun_cabinet_door_sensor', 'on') %}
-            &emsp;&emsp;- Gun Cabinet: Gun Cabinet Door Open<br>
-            {% endif %}
             {% endif %}
             
             {% if is_state('binary_sensor.global_fire_status', 'on') %}
