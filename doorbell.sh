@@ -6,9 +6,10 @@ if ! command -v adb >/dev/null 2>&1; then
 fi
 
 # 2. 定义常量配置
+DEVICE_REOLINK="192.168.50.86:554"
 DEVICE_X08A="192.168.50.180:5555"
 DEVICE_SONY_TV="192.168.50.220:5555"
-RTSP_URL="rtsp://admin:XH*8eSPx@192.168.50.190:554/Preview_01_sub"
+RTSP_URL="rtsp://admin:XH*8eSPx@${DEVICE_REOLINK}/Preview_01_sub"
 VLC_ACTIVITY="org.videolan.vlc/org.videolan.vlc.gui.video.VideoPlayerActivity"
 INTENT_ACTION="android.intent.action.VIEW"
 KEYCODE_HOME=3
