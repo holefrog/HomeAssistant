@@ -95,7 +95,7 @@
         state: 'on'
       sequence:
       - variables:
-          picname: gun-{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg
+          picname: gun-{{ now().strftime("%Y%m%d-%H%MB%S") }}.jpg
       - delay:
           seconds: 1
       - action: camera.snapshot
