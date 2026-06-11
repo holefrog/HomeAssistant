@@ -7,9 +7,9 @@
   triggers:
   - trigger: state
     entity_id:
-    - binary_sensor.garage_garage_door_garage_opener_door_sensor
-    - binary_sensor.door_contact_sensor_4f9f
-    - binary_sensor.door_contact_sensor_4ee1
+    - binary_sensor.garage_door_sensor
+    - binary_sensor.door_kitchen_opening
+    - binary_sensor.door_gate_opening
     from: 'off'
     to: 'on'
     for:

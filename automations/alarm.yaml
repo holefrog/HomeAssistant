@@ -78,7 +78,7 @@
   mode: single
   triggers:
   - trigger: state
-    entity_id: binary_sensor.gun_cabinet_door_sensor
+    entity_id: binary_sensor.stair_closet_camera_door_sensor
     to: 'on'
   conditions:
   - condition: state
@@ -102,7 +102,7 @@
         data:
           filename: /config/www/record/{{ picname }}
         target:
-          entity_id: camera.gun_cabinet_camera
+          entity_id: camera.stair_closet_camera
       - action: notify.group_phone
         data:
           title: Cabinet door is open!!!
@@ -137,7 +137,7 @@
             data:
               filename: /config/www/record/{{ picname_loop }}
             target:
-              entity_id: camera.gun_cabinet_camera
+              entity_id: camera.stair_closet_camera
 
 
 # -------------------------------------------------------------
