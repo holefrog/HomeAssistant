@@ -1,29 +1,47 @@
-# 提醒：门长时间未关
-- id: 'reminder_long_door_open'
-  alias: 'Reminder_Long_door_open'
-  description: '门长时间未关时发送提醒通知'
-  mode: single
-  max: 10
-  triggers:
+alias: Reminder_Long_door_open_Combined
+description: 多门独立计时与循环提醒（合并版）
+mode: parallel
+max: 10
+triggers:
   - trigger: state
-    entity_id:
-    - binary_sensor.garage_door_sensor
-    - binary_sensor.door_kitchen_opening
-    - binary_sensor.door_gate_opening
-    from: 'off'
-    to: 'on'
+    entity_id: binary_sensor.garage_door_sensor
+    from: "off"
+    to: "on"
     for:
-      minutes: 30
-  conditions: []
-  actions:
+      minutes: 60
+    id: garage # 业务目的：为车库门绑定独立ID，用于后续动态状态追踪
+  - trigger: state
+    entity_id: binary_sensor.door_kitchen_opening
+    from: "off"
+    to: "on"
+    for:
+      minutes: 60
+    id: kitchen # 业务目的：为厨房门绑定独立ID
+  - trigger: state
+    entity_id: binary_sensor.door_gate_opening
+    from: "off"
+    to: "on"
+    for:
+      minutes: 60
+    id: gate # 业务目的：为大门绑定独立ID
+conditions: []
+actions:
   - repeat:
       until:
-      - condition: template
-        value_template: '{{ is_state(trigger.entity_id, "off") }}'
+        - condition: template
+          # 业务目的：利用 states(trigger.entity_id) 动态获取当前触发了满60分钟的那扇门的实时状态。
+          # 这样即使三扇门都开了，由于 mode: parallel，它们在后台的进程也只会盯着自己对应的 entity_id。
+          value_template: "{{ states(trigger.entity_id) == 'off' }}"
       sequence:
-      - action: notify.group_phone
-        data:
-          title: '{{ area_name(trigger.entity_id) }}'
-          message: The door has been open for a long time.
-      - delay:
-          minutes: 10
+        - action: notify.group_phone
+          data:
+            title: "{{ area_name(trigger.entity_id) or '门窗提醒' }}"
+            # 业务目的：根据触发的 ID，发送具体的中文提示，让人一眼看懂是哪里的问题。
+            message: >-
+              {% if trigger.id == 'garage' %} 车库门
+              {% elif trigger.id == 'kitchen' %} 厨房门
+              {% elif trigger.id == 'gate' %} 大门
+              {% else %} 某扇门
+              {% endif %}已经打开超过60分钟未关，请留意。
+        - delay:
+            minutes: 60 # 业务目的：首次提醒后，每隔60分钟再次触发提醒
