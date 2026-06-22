@@ -59,16 +59,22 @@
   actions:
     # 定义局部变量，将传感器与需要控制的灯光绑定
     - variables:
+        LUX_TH: 200
         light_map:
           binary_sensor.lumi_motion_floor_1: light.xiaomi_gateway_0x7c49eb924bd7_light_0x7c49eb924bd7
           binary_sensor.lumi_motion_floor_2: light.xiaomi_gateway_0x7c49eb93b068_light_0x7c49eb93b068
-
+        lux_map:
+          binary_sensor.lumi_motion_floor_1: sensor.lumi_motion_floor_1_illuminance
+          binary_sensor.lumi_motion_floor_2: sensor.lumi_motion_floor_2_illuminance
         target_light: "{{ light_map[trigger.entity_id] }}"
+        target_lux_sensor: "{{ lux_map[trigger.entity_id] }}"
     - choose:
         # 如果触发事件是从 off 变成 on (检测到人)
         - conditions:
             - condition: template
               value_template: "{{ trigger.to_state.state == 'on' }}"
+            - condition: template
+              value_template: "{{ states(target_lux_sensor) | float(0) < LUX_TH }}"
           sequence:
             - action: light.turn_on
               target:
