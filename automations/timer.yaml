@@ -1,0 +1,69 @@
+- id: 'timer_voice_announcements'
+  alias: "Voice Assistant Timer Announcements"
+  description: "Play TTS announcements when a timer starts, pauses, cancels, or finishes"
+  mode: queued
+  trigger:
+    - platform: event
+      event_type: timer.started
+      id: "started"
+    - platform: event
+      event_type: timer.finished
+      id: "finished"
+    - platform: event
+      event_type: timer.paused
+      id: "paused"
+    - platform: event
+      event_type: timer.cancelled
+      id: "cancelled"
+  variables:
+    # 获取定时器的名称，默认值为“倒数”
+    timer_name: "{{ state_attr(trigger.event.data.entity_id, 'friendly_name') | default('倒数', true) }}"
+  action:
+    - choose:
+        - conditions:
+            - condition: trigger
+              id: "started"
+          sequence:
+            - action: tts.speak
+              target:
+                entity_id: tts.piper
+              data:
+                cache: false
+                media_player_entity_id: media_player.rpi_squeeze
+                message: "现在开始{{ timer_name }}"
+                
+        - conditions:
+            - condition: trigger
+              id: "finished"
+          sequence:
+            - action: tts.speak
+              target:
+                entity_id: tts.piper
+              data:
+                cache: false
+                media_player_entity_id: media_player.rpi_squeeze
+                message: "{{ timer_name }}定时已经结束"
+                
+        - conditions:
+            - condition: trigger
+              id: "paused"
+          sequence:
+            - action: tts.speak
+              target:
+                entity_id: tts.piper
+              data:
+                cache: false
+                media_player_entity_id: media_player.rpi_squeeze
+                message: "{{ timer_name }}定时已暂停"
+                
+        - conditions:
+            - condition: trigger
+              id: "cancelled"
+          sequence:
+            - action: tts.speak
+              target:
+                entity_id: tts.piper
+              data:
+                cache: false
+                media_player_entity_id: media_player.rpi_squeeze
+                message: "{{ timer_name }}定时已取消"
