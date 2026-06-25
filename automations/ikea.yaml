@@ -98,7 +98,7 @@
             - action: media_player.media_play_pause
               data: {}
               target:
-                entity_id: media_player.rpi_squeeze
+                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
   mode: single
 
 # Auto_IKEA_Livingroom_Light_Control
