@@ -80,7 +80,7 @@
             - action: media_player.volume_down
               data: {}
               target:
-                entity_id: media_player.rpi_squeeze
+                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
         # 下键长按 → 切换播放器电源
         - conditions:
             - condition: trigger
@@ -89,7 +89,7 @@
             - action: media_player.toggle
               data: {}
               target:
-                entity_id: media_player.rpi_squeeze
+                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
         # 上键长按 → 切换播放/暂停
         - conditions:
             - condition: trigger
