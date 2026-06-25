@@ -1,0 +1,16 @@
+start_timer:
+  alias: "语音倒计时"
+  mode: restart
+  fields:
+    seconds:
+      description: "倒计时秒数"
+      default: 30
+  sequence:
+    - delay:
+        seconds: "{{ seconds | int(0) }}"
+    - service: tts.speak
+      target:
+        entity_id: tts.piper
+      data:
+        media_player_entity_id: media_player.bedroom_master_raspberry_pi_local_edge_media_player
+        message: "时间到啦！"
