@@ -18,4 +18,4 @@ start_timer:
               media_content_id: "{{ states('input_text.media_root') }}countdown.wav"
               media_content_type: "music"
           - delay:
-              seconds: 8
+              seconds: 82
