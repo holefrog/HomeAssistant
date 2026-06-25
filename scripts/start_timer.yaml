@@ -8,9 +8,9 @@ start_timer:
   sequence:
     - delay:
         seconds: "{{ seconds | int(0) }}"
-    - service: tts.speak
+    - service: media_player.play_media
       target:
-        entity_id: tts.piper
+        entity_id: media_player.bedroom_master_raspberry_pi_local_edge_media_player
       data:
-        media_player_entity_id: media_player.bedroom_master_raspberry_pi_local_edge_media_player
-        message: "时间到啦！"
+        media_content_id: "{{ states('input_text.media_root') }}countdown.wav"
+        media_content_type: "music"
