@@ -101,6 +101,17 @@ StopTimerIntent:
       target:
         entity_id: &va_speaker media_player.bedroom_master_raspberry_pi_local_edge_media_player
 
+CancelTimerIntent:
+  speech:
+    text: "好的，已为您取消倒计时。"
+  action:
+    - service: script.turn_off
+      target:
+        entity_id: script.start_timer
+    - service: media_player.media_stop
+      target:
+        entity_id: *va_speaker
+
 # ==========================================
 # 🎵 媒体与播放控制 (Media Controls)
 # ==========================================
