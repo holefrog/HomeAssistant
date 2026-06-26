@@ -71,7 +71,7 @@
             - action: media_player.volume_up
               data: {}
               target:
-                entity_id: media_player.rpi_squeeze
+                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
         # 下键短按 → 音量减
         - conditions:
             - condition: trigger
