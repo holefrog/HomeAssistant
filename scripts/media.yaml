@@ -207,13 +207,6 @@ smart_media_control:
               data:
                 volume_level: "{{ vol_level }}"
         - conditions:
-            - "{{ cmd == 'media_pause' }}"
-          sequence:
-            - service: "media_player.media_play_pause"
-              data: {}
-              target:
-                entity_id: "{{ target_player }}"
-        - conditions:
             - "{{ cmd == 'volume_mute_true' }}"
           sequence:
             - service: "media_player.volume_set"
