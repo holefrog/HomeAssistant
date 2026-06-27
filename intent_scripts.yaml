@@ -123,7 +123,7 @@ MediaVolumeUp:
     - service: script.smart_media_control
       data:
         cmd: "volume_up"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (音量小)
 MediaVolumeDown:
@@ -133,7 +133,7 @@ MediaVolumeDown:
     - service: script.smart_media_control
       data:
         cmd: "volume_down"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (暂停)
 MediaPause:
@@ -143,7 +143,7 @@ MediaPause:
     - service: script.smart_media_control
       data:
         cmd: "media_pause"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (继续播放)
 MediaPlay:
@@ -153,7 +153,7 @@ MediaPlay:
     - service: script.smart_media_control
       data:
         cmd: "media_play"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (停止)
 MediaStop:
@@ -163,7 +163,7 @@ MediaStop:
     - service: script.smart_media_control
       data:
         cmd: "media_stop"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (从头播放)
 MediaRestart:
@@ -173,7 +173,7 @@ MediaRestart:
     - service: script.smart_media_control
       data:
         cmd: "media_seek"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (上一首)
 MediaPreviousTrack:
@@ -183,7 +183,7 @@ MediaPreviousTrack:
     - service: script.smart_media_control
       data:
         cmd: "media_previous_track"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (下一首)
 MediaNextTrack:
@@ -193,7 +193,7 @@ MediaNextTrack:
     - service: script.smart_media_control
       data:
         cmd: "media_next_track"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (指定音量)
 MediaSetVolume:
@@ -204,7 +204,7 @@ MediaSetVolume:
       data:
         cmd: "volume_set"
         vol_level: "{{ (volume_level | int(50)) / 100.0 }}"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (静音)
 MediaMute:
@@ -214,7 +214,7 @@ MediaMute:
     - service: script.smart_media_control
       data:
         cmd: "volume_mute_true"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
 
 # 媒体控制 (取消静音)
 MediaUnmute:
@@ -224,4 +224,4 @@ MediaUnmute:
     - service: script.smart_media_control
       data:
         cmd: "volume_mute_false"
-        dev_id: "{{ _intent.device_id | default('') }}"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
