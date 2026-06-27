@@ -120,104 +120,108 @@ MediaVolumeUp:
   speech:
     text: "音量已增加"
   action:
-    - service: media_player.volume_up
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "volume_up"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (音量小)
 MediaVolumeDown:
   speech:
     text: "音量已减小"
   action:
-    - service: media_player.volume_down
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "volume_down"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (暂停)
 MediaPause:
   speech:
     text: "已暂停播放"
   action:
-    - service: media_player.media_pause
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "media_pause"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (继续播放)
 MediaPlay:
   speech:
     text: "继续播放"
   action:
-    - service: media_player.media_play
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "media_play"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (停止)
 MediaStop:
   speech:
     text: "已停止播放"
   action:
-    - service: media_player.media_stop
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "media_stop"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (从头播放)
 MediaRestart:
   speech:
     text: "从头开始播放"
   action:
-    - service: media_player.media_seek
+    - service: script.smart_media_control
       data:
-        seek_position: 0
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+        cmd: "media_seek"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (上一首)
 MediaPreviousTrack:
   speech:
     text: "播放上一首"
   action:
-    - service: media_player.media_previous_track
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "media_previous_track"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (下一首)
 MediaNextTrack:
   speech:
     text: "播放下一首"
   action:
-    - service: media_player.media_next_track
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
+      data:
+        cmd: "media_next_track"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (指定音量)
 MediaSetVolume:
   speech:
     text: "好的，音量已调至百分之{{ volume_level }}"
   action:
-    - service: media_player.volume_set
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
       data:
-        volume_level: "{{ (volume_level | int(50)) / 100.0 }}"
+        cmd: "volume_set"
+        vol_level: "{{ (volume_level | int(50)) / 100.0 }}"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (静音)
 MediaMute:
   speech:
     text: "已静音"
   action:
-    - service: media_player.volume_mute
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
       data:
-        is_volume_muted: true
+        cmd: "volume_mute_true"
+        dev_id: "{{ _intent.device_id | default('') }}"
 
 # 媒体控制 (取消静音)
 MediaUnmute:
   speech:
     text: "已恢复音量"
   action:
-    - service: media_player.volume_mute
-      target:
-        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+    - service: script.smart_media_control
       data:
-        is_volume_muted: false
+        cmd: "volume_mute_false"
+        dev_id: "{{ _intent.device_id | default('') }}"

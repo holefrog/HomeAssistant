@@ -177,3 +177,52 @@ lumi_gateway_control:
           {%- else -%}
             {"file": "{{ data_val | default('') }}"}
           {%- endif -%}
+
+# -------------------------------------------------------------
+# 智能房间媒体控制 (Smart Room Media Control)
+# -------------------------------------------------------------
+smart_media_control:
+  alias: Smart Media Control
+  mode: parallel
+  fields:
+    cmd:
+      description: "Command to execute (e.g. volume_up, media_pause)"
+    vol_level:
+      description: "Volume level if cmd is volume_set"
+    dev_id:
+      description: "Device ID from _intent"
+  sequence:
+    - variables:
+        target_player: >
+          {% set area = area_id(dev_id) if dev_id else none %}
+          {% set players = area_entities(area) | select('match', '^media_player\\.') | reject('search', '_media_player$') | list if area else [] %}
+          {{ players[0] if players else 'media_player.bedroom_master_raspberry_pi_local_edge' }}
+    - choose:
+        - conditions:
+            - "{{ cmd == 'volume_set' }}"
+          sequence:
+            - service: "media_player.volume_set"
+              target:
+                entity_id: "{{ target_player }}"
+              data:
+                volume_level: "{{ vol_level }}"
+        - conditions:
+            - "{{ cmd == 'volume_mute_true' }}"
+          sequence:
+            - service: "media_player.volume_mute"
+              target:
+                entity_id: "{{ target_player }}"
+              data:
+                is_volume_muted: true
+        - conditions:
+            - "{{ cmd == 'volume_mute_false' }}"
+          sequence:
+            - service: "media_player.volume_mute"
+              target:
+                entity_id: "{{ target_player }}"
+              data:
+                is_volume_muted: false
+      default:
+        - service: "media_player.{{ cmd }}"
+          target:
+            entity_id: "{{ target_player }}"
