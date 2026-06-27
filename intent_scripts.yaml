@@ -118,7 +118,7 @@ CancelTimerIntent:
 # 媒体控制 (音量大)
 MediaVolumeUp:
   speech:
-    text: "音量已调大"
+    text: "音量已增加"
   action:
     - service: media_player.volume_up
       target:
@@ -127,7 +127,7 @@ MediaVolumeUp:
 # 媒体控制 (音量小)
 MediaVolumeDown:
   speech:
-    text: "音量已调小"
+    text: "音量已减小"
   action:
     - service: media_player.volume_down
       target:
@@ -188,3 +188,36 @@ MediaNextTrack:
     - service: media_player.media_next_track
       target:
         entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+
+# 媒体控制 (指定音量)
+MediaSetVolume:
+  speech:
+    text: "好的，音量已调至百分之{{ volume_level }}"
+  action:
+    - service: media_player.volume_set
+      target:
+        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+      data:
+        volume_level: "{{ (volume_level | int(50)) / 100.0 }}"
+
+# 媒体控制 (静音)
+MediaMute:
+  speech:
+    text: "已静音"
+  action:
+    - service: media_player.volume_mute
+      target:
+        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+      data:
+        is_volume_muted: true
+
+# 媒体控制 (取消静音)
+MediaUnmute:
+  speech:
+    text: "已恢复音量"
+  action:
+    - service: media_player.volume_mute
+      target:
+        entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+      data:
+        is_volume_muted: false
