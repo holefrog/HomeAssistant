@@ -198,7 +198,7 @@ MediaNextTrack:
 # 媒体控制 (指定音量)
 MediaSetVolume:
   speech:
-    text: "好的，音量已调至百分之{{ volume_level }}"
+    text: "好的，音量已设置为百分之{{ volume_level }}"
   action:
     - service: script.smart_media_control
       data:

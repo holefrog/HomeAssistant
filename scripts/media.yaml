@@ -207,21 +207,27 @@ smart_media_control:
               data:
                 volume_level: "{{ vol_level }}"
         - conditions:
+            - "{{ cmd == 'media_pause' }}"
+          sequence:
+            - service: "media_player.media_play_pause"
+              target:
+                entity_id: "{{ target_player }}"
+        - conditions:
             - "{{ cmd == 'volume_mute_true' }}"
           sequence:
-            - service: "media_player.volume_mute"
+            - service: "media_player.volume_set"
               target:
                 entity_id: "{{ target_player }}"
               data:
-                is_volume_muted: true
+                volume_level: 0
         - conditions:
             - "{{ cmd == 'volume_mute_false' }}"
           sequence:
-            - service: "media_player.volume_mute"
+            - service: "media_player.volume_set"
               target:
                 entity_id: "{{ target_player }}"
               data:
-                is_volume_muted: false
+                volume_level: 0.5
       default:
         - service: "media_player.{{ cmd }}"
           target:
