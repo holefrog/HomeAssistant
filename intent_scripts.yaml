@@ -198,7 +198,7 @@ MediaNextTrack:
 # 媒体控制 (指定音量)
 MediaSetVolume:
   speech:
-    text: "好的，音量已设置为百分之{{ volume_level }}"
+    text: "好的，音量已设置为百分之{{ volume_level | int }}"
   action:
     - service: script.smart_media_control
       data:
@@ -224,4 +224,64 @@ MediaUnmute:
     - service: script.smart_media_control
       data:
         cmd: "volume_mute_false"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+# 媒体控制 (开机)
+MediaPowerOn:
+  speech:
+    text: "已为您打开播放器"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "turn_on"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+# 媒体控制 (关机)
+MediaPowerOff:
+  speech:
+    text: "已为您关闭播放器"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "turn_off"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+# ==========================================
+# 拦截 HA 原生系统媒体控制意图
+# 防止原生系统“盲抓” TTS 音箱导致崩溃
+# ==========================================
+HassMediaPause:
+  speech:
+    text: "已暂停播放"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "media_pause"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+HassMediaPlay:
+  speech:
+    text: "继续播放"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "media_play"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+HassMediaNext:
+  speech:
+    text: "播放下一首"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "media_next_track"
+        dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
+
+HassMediaPrevious:
+  speech:
+    text: "播放上一首"
+  action:
+    - service: script.smart_media_control
+      data:
+        cmd: "media_previous_track"
         dev_id: "{{ _intent.device_id if _intent is defined else '' }}"
