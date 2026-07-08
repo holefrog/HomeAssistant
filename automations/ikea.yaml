@@ -106,7 +106,7 @@
 # 左键切换卧室左边床头灯，右键切换卧室右边床头灯
 - id: 'auto_ikea_livingroom_light_control'
   alias: Auto_IKEA_Livingroom_Light_Control
-  description: '客厅宜家四键遥控器'
+  description: '客厅宜家四键遥控器控制客厅灯和左右卧室灯'
   use_blueprint:
     path: Malte/zha-ikea-four-button-remote-styrbar-for-lights-e2001-e2002.yaml
     input:
@@ -123,5 +123,24 @@
         - action: light.toggle
           target:
             entity_id: light.sonoff_main # Bedside-Lamp-Right
+      button_left_long: []
+      button_right_long: []
+
+# Auto_IKEA_Justin_Light_Control
+# Justin房间宜家遥控器：上键开灯/长按调亮，下键关灯/长按调暗
+# 左右键暂不添加功能
+- id: 'auto_ikea_Justin_light_control'
+  alias: Auto_IKEA_Justin_Light_Control
+  description: '控制Justin灯的开和关'
+  use_blueprint:
+    path: Malte/zha-ikea-four-button-remote-styrbar-for-lights-e2001-e2002.yaml
+    input:
+      remote: fa742ea468abdb1cfdcdd6ae224e85be # IKEA of Sweden Remote Control N2 3rd
+      light:
+        entity_id: light.sonoff_justin # SOnOff_Justin
+      brightness: 50
+      force_brightness: false
+      button_left_short: []
+      button_right_short: []
       button_left_long: []
       button_right_long: []
