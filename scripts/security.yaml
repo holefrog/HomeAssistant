@@ -80,3 +80,51 @@ alarm_clear_all:
           target:
             entity_id: media_player.group_player
         - action: script.lumi_alarm_stop_all
+
+
+# 报警通知与声光循环
+# 供各类报警自动化统一调用，避免在自动化中重复编写 repeat until 循环
+alarm_notify_loop:
+  alias: Alarm Notify Loop
+  mode: restart
+  fields:
+    title:
+      description: "报警标题"
+      required: true
+    message:
+      description: "报警消息内容"
+      required: true
+    clear_button_title:
+      description: "解除报警按钮文字"
+      default: "✅ Click to clear alarm"
+    tag:
+      description: "通知标签"
+      default: "security_alarm"
+  sequence:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.input_clear
+    - repeat:
+        until:
+          - condition: state
+            entity_id: input_boolean.input_clear
+            state: "on"
+        sequence:
+          - action: notify.group_phone
+            data:
+              title: "{{ title }}"
+              message: "{{ message }}"
+              data:
+                tag: "{{ tag }}"
+                persistent: true
+                sticky: true
+                actions:
+                  - action: CONFIRM_CLEAR
+                    title: "{{ clear_button_title }}"
+          - action: persistent_notification.create
+            data:
+              title: "{{ title }}"
+              message: "{{ message }}"
+          - action: script.alarm_trigger_all
+          - delay:
+              seconds: 30
