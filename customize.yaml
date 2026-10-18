@@ -1,0 +1,145 @@
+# =============================================================
+# customize.yaml — 设备显示名称统一管理
+#
+# 用途：集中定义所有设备的 friendly_name，纳入 Git 版本控制。
+#       重装 HA 不丢失，优先级高于 UI 手动设置。
+#
+# 引用方式（configuration.yaml）：
+#   homeassistant:
+#     customize: !include customize.yaml
+#
+# 命名规范：见 docs/naming_convention.md
+# 最后更新：2026-10-17
+# =============================================================
+
+
+# ─── 灯光 ─────────────────────────────────────────────────────
+light.bedside_lamp_rgbww_light:
+  friendly_name: "卧室床头灯左"
+
+light.sonoff_main:
+  friendly_name: "卧室床头灯右"
+
+light.sonoff_justin:
+  friendly_name: "Justin房灯"
+
+light.ikea_of_sweden_silverglans_ip44_led_driver_light:
+  friendly_name: "浴室LED灯带"
+
+light.ikea_of_sweden_tradfri_bulb_e26_ws_globe_1100lm:
+  friendly_name: "客厅主灯"
+
+light.xiaomi_gateway_0x7c49eb924bd7_light_0x7c49eb924bd7:
+  friendly_name: "一楼网关指示灯"
+
+light.xiaomi_gateway_0x7c49eb93b068_light_0x7c49eb93b068:
+  friendly_name: "二楼网关指示灯"
+
+light.xiaomi_gateway_0x7a49eb93b268_light_0x7a49eb93b268:
+  friendly_name: "三楼网关指示灯"
+
+light.cabinet_floor_1_gun_cabinet_stair_closet_camera_blue_led:
+  friendly_name: "枪柜摄像头蓝灯"
+
+
+# ─── 门窗传感器 ───────────────────────────────────────────────
+binary_sensor.door_kitchen_opening:
+  friendly_name: "厨房门"
+
+binary_sensor.door_gate_opening:
+  friendly_name: "大门"
+
+binary_sensor.garage_door_sensor:
+  friendly_name: "车库门"
+
+binary_sensor.stair_closet_camera_door_sensor:
+  friendly_name: "枪柜门"
+
+binary_sensor.window_floor_2_opening:
+  friendly_name: "二楼窗户"
+
+binary_sensor.window_laundry_opening:
+  friendly_name: "洗衣房窗户"
+
+
+# ─── 动作传感器 ───────────────────────────────────────────────
+binary_sensor.lumi_motion_floor_1:
+  friendly_name: "一楼走廊人体传感器"
+
+binary_sensor.lumi_motion_floor_2:
+  friendly_name: "二楼走廊人体传感器"
+
+
+# ─── 震动传感器 ───────────────────────────────────────────────
+binary_sensor.gun_safe_vibration_inside_sensor:
+  friendly_name: "枪柜震动传感器（内）"
+
+binary_sensor.gun_safe_vibration_outside_sensor:
+  friendly_name: "枪柜震动传感器（外）"
+
+
+# ─── 媒体播放器 ───────────────────────────────────────────────
+media_player.bedroom_master_raspberry_pi_local_edge:
+  friendly_name: "卧室树莓派"
+
+media_player.rpi_squeeze:
+  friendly_name: "卧室Squeezebox"
+
+media_player.esp32_livingroom:
+  friendly_name: "客厅ESP32音箱"
+
+media_player.esp32_a1s:
+  friendly_name: "ESP32音箱A1S"
+
+media_player.esp32_duo:
+  friendly_name: "ESP32双声道"
+
+media_player.xiaoai_kitchen_2:
+  friendly_name: "厨房小爱音箱"
+
+media_player.lumirouter_f1:
+  friendly_name: "一楼网关音响"
+
+
+# ─── 摄像头 ───────────────────────────────────────────────────
+camera.stair_closet_camera:
+  friendly_name: "枪柜摄像头"
+
+camera.reolink_video_doorbell_wifi_fluent:
+  friendly_name: "门铃摄像头"
+
+
+# ─── 温湿度传感器 ─────────────────────────────────────────────
+sensor.xiaomi_lywsd03mmc_temperature:
+  friendly_name: "Justin房温度"
+
+sensor.xiaomi_lywsd03mmc_temperature_2:
+  friendly_name: "车库温度"
+
+sensor.xiaomi_lywsd03mmc_temperature_3:
+  friendly_name: "主卧温度"
+
+sensor.xiaomi_lywsd03mmc_humidity:
+  friendly_name: "Justin房湿度"
+
+sensor.xiaomi_lywsd03mmc_humidity_2:
+  friendly_name: "车库湿度"
+
+sensor.xiaomi_lywsd03mmc_humidity_3:
+  friendly_name: "主卧湿度"
+
+
+# ─── 暖通空调 ─────────────────────────────────────────────────
+climate.thermostat:
+  friendly_name: "厨房暖通空调"
+
+
+# ─── 开关 ─────────────────────────────────────────────────────
+switch.garage_door_switch:
+  friendly_name: "车库门开关"
+
+switch.stair_closet_led:
+  friendly_name: "楼梯间LED"
+
+switch.cabinet_floor_1_gun_cabinet_stair_closet_camera_restart:
+  friendly_name: "枪柜摄像头重启"
