@@ -35,9 +35,6 @@ light.xiaomi_gateway_0x7c49eb924bd7_light_0x7c49eb924bd7:
 light.xiaomi_gateway_0x7c49eb93b068_light_0x7c49eb93b068:
   friendly_name: "二楼网关指示灯"
 
-light.xiaomi_gateway_0x7a49eb93b268_light_0x7a49eb93b268:
-  friendly_name: "三楼网关指示灯"
-
 light.cabinet_floor_1_gun_cabinet_stair_closet_camera_blue_led:
   friendly_name: "枪柜摄像头蓝灯"
 
