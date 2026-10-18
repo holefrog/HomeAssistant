@@ -9,7 +9,7 @@
     input:
       remote: cdb1113d5f83ef1d2f4828a1d33bc51d
       light:
-        entity_id: light.ikea_of_sweden_silverglans_ip44_led_driver_light
+        entity_id: light.bathroom_led_strip
       brightness: 50
       force_brightness: false
       button_left_short:
@@ -71,7 +71,7 @@
             - action: media_player.volume_up
               data: {}
               target:
-                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+                entity_id: media_player.bedroom_rpi_music
         # 下键短按 → 音量减
         - conditions:
             - condition: trigger
@@ -80,7 +80,7 @@
             - action: media_player.volume_down
               data: {}
               target:
-                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+                entity_id: media_player.bedroom_rpi_music
         # 下键长按 → 切换播放器电源
         - conditions:
             - condition: trigger
@@ -89,7 +89,7 @@
             - action: media_player.toggle
               data: {}
               target:
-                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+                entity_id: media_player.bedroom_rpi_music
         # 上键长按 → 切换播放/暂停
         - conditions:
             - condition: trigger
@@ -98,7 +98,7 @@
             - action: media_player.media_play_pause
               data: {}
               target:
-                entity_id: media_player.bedroom_master_raspberry_pi_local_edge
+                entity_id: media_player.bedroom_rpi_music
   mode: single
 
 # Auto_IKEA_Livingroom_Light_Control
@@ -112,7 +112,7 @@
     input:
       remote: a7a079ae199587a6ce8eb03296530610 # Device: IKEA_Controller_Livingroom [Livingroom-Floor-2]
       light:
-        entity_id: light.ikea_of_sweden_tradfri_bulb_e26_ws_globe_1100lm # IKEA_Bulb_E26 [Livingroom-Floor-2]
+        entity_id: light.livingroom_main # IKEA_Bulb_E26 [Livingroom-Floor-2]
       brightness: 50
       force_brightness: false
       button_left_short:
@@ -129,7 +129,7 @@
 # Auto_IKEA_Justin_Light_Control
 # Justin房间宜家遥控器：上键开灯/长按调亮，下键关灯/长按调暗
 # 左右键暂不添加功能
-- id: 'auto_ikea_Justin_light_control'
+- id: 'auto_ikea_justin_light_control'
   alias: Auto_IKEA_Justin_Light_Control
   description: '控制Justin灯的开和关'
   use_blueprint:

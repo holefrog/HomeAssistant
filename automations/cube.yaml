@@ -1,6 +1,6 @@
 # 魔方控制器：控制卧室台灯和树莓派播放器
 - id: 'auto_cube_control_bedlamp_and_rpi'
-  alias: 'Auto_Cube_control Bedlamp_and_RPI'
+  alias: 'Auto_Cube_Control_Bedlamp_And_Rpi'
   description: 'Blueprint: https://community.home-assistant.io/t/aqara-magic-cube-zha-51-actions/270829'
   use_blueprint:
     path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml

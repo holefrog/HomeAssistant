@@ -20,7 +20,7 @@
 # 报警：门窗被打开（仅在离家布防模式下触发）
 # -------------------------------------------------------------
 - id: 'alarm_door_window_open'
-  alias: 'Alarm_Door_Window_open'
+  alias: 'Alarm_Door_Window_Open'
   description: '门窗被打开报警（仅在离家布防模式下触发）'
   mode: restart
   triggers:
@@ -72,8 +72,8 @@
 # -------------------------------------------------------------
 # 摄像机：楼梯间门打开时拍照录像（仅在离家布防模式下触发）
 # -------------------------------------------------------------
-- id: 'camera_record_when_firearm_cabinet_door_is_open'
-  alias: 'Camera_Record_when_firearm_cabinet_door_is_open'
+- id: 'alarm_gun_safe_camera_record'
+  alias: 'Alarm_Gun_Safe_Camera_Record'
   description: '枪柜门打开时开始连拍并保存（仅在离家布防模式下触发）'
   mode: single
   triggers:
@@ -144,7 +144,7 @@
 # 报警：枪柜震动报警（仅在离家布防模式下触发）
 # -------------------------------------------------------------
 - id: 'alarm_gun_safe_opened'
-  alias: 'Alarm_Gun_safe_opened!!!'
+  alias: 'Alarm_Gun_Safe_Opened'
   description: '枪柜内部震动报警（仅在离家布防模式下触发）'
   mode: restart
   triggers:
@@ -273,7 +273,7 @@
 # 辅助：处理手机端通知点击"解除报警"的操作
 # -------------------------------------------------------------
 - id: 'alarm_handle_actionable_notification'
-  alias: 'Alarm_Handle_actionable_notification'
+  alias: 'Alarm_Handle_Actionable_Notification'
   description: '手机端点击解除报警动作或前端关闭通知后，清除报警状态'
   mode: restart
   triggers:

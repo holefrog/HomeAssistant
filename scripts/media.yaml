@@ -195,8 +195,8 @@ smart_media_control:
     - variables:
         target_player: >-
           {% set area = area_id(dev_id) if dev_id else none %}
-          {% set players = area_entities(area) | select('match', '^media_player\\.') | reject('search', '_media_player$') | list if area else [] %}
-          {{ players[0] if players else 'media_player.bedroom_master_raspberry_pi_local_edge' }}
+          {% set players = area_entities(area) | select('match', '^media_player\\.') | reject('search', '(_media_player|_voice)$') | list if area else [] %}
+          {{ players[0] if players else 'media_player.bedroom_rpi_music' }}
     - choose:
         - conditions:
             - "{{ cmd == 'volume_set' }}"

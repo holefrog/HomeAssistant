@@ -23,16 +23,16 @@ light.sonoff_main:
 light.sonoff_justin:
   friendly_name: "Justin房灯"
 
-light.ikea_of_sweden_silverglans_ip44_led_driver_light:
+light.bathroom_led_strip:
   friendly_name: "浴室LED灯带"
 
-light.ikea_of_sweden_tradfri_bulb_e26_ws_globe_1100lm:
+light.livingroom_main:
   friendly_name: "客厅主灯"
 
-light.xiaomi_gateway_0x7c49eb924bd7_light_0x7c49eb924bd7:
+light.gateway_floor_1:
   friendly_name: "一楼网关指示灯"
 
-light.xiaomi_gateway_0x7c49eb93b068_light_0x7c49eb93b068:
+light.gateway_floor_2:
   friendly_name: "二楼网关指示灯"
 
 light.cabinet_floor_1_gun_cabinet_stair_closet_camera_blue_led:
@@ -76,11 +76,11 @@ binary_sensor.gun_safe_vibration_outside_sensor:
 
 
 # ─── 媒体播放器 ───────────────────────────────────────────────
-media_player.bedroom_master_raspberry_pi_local_edge:
-  friendly_name: "卧室树莓派"
+media_player.bedroom_rpi_music:
+  friendly_name: "卧室树莓派音乐"
 
-media_player.rpi_squeeze:
-  friendly_name: "卧室Squeezebox"
+media_player.bedroom_rpi_voice:
+  friendly_name: "卧室语音助手"
 
 media_player.esp32_livingroom:
   friendly_name: "客厅ESP32音箱"
@@ -140,3 +140,87 @@ switch.stair_closet_led:
 
 switch.cabinet_floor_1_gun_cabinet_stair_closet_camera_restart:
   friendly_name: "枪柜摄像头重启"
+
+# ─── 漏水传感器 ───────────────────────────────────────────────
+binary_sensor.lumi_lumi_flood_acn001_moisture:
+  friendly_name: "主卫漏水传感器"
+
+binary_sensor.lumi_lumi_flood_acn001_moisture_2:
+  friendly_name: "厨房漏水传感器"
+
+binary_sensor.lumi_lumi_flood_acn001_moisture_3:
+  friendly_name: "客卫漏水传感器"
+
+binary_sensor.lumi_lumi_flood_acn001_moisture_4:
+  friendly_name: "楼梯下漏水传感器"
+
+binary_sensor.lumi_lumi_sensor_wleak_aq1_moisture:
+  friendly_name: "洗衣房漏水传感器"
+
+
+# ─── 楼层温湿度（Lumi 温湿度计）────────────────────────────────
+sensor.lumi_lumi_weather_temperature:
+  friendly_name: "二楼温度"
+
+sensor.lumi_lumi_weather_temperature_2:
+  friendly_name: "一楼温度"
+
+sensor.lumi_lumi_weather_humidity:
+  friendly_name: "二楼湿度"
+
+sensor.lumi_lumi_weather_humidity_2:
+  friendly_name: "一楼湿度"
+
+sensor.lumi_lumi_weather_pressure:
+  friendly_name: "二楼气压"
+
+sensor.lumi_lumi_weather_pressure_2:
+  friendly_name: "一楼气压"
+
+
+# ─── 媒体播放器（补充）───────────────────────────────────────
+media_player.squeezewrt:
+  friendly_name: "二楼Squeezebox"
+
+media_player.group_player:
+  friendly_name: "全屋播放器组"
+
+
+# ─── 灯光群组 ─────────────────────────────────────────────────
+light.group_light_all:
+  friendly_name: "全屋灯光组"
+
+light.group_light_led:
+  friendly_name: "全屋LED灯带组"
+
+
+# ─── 客厅TV Frame ──────────────────────────────────────────────
+binary_sensor.backlit_frame_113a70_backlit_frame_pir:
+  friendly_name: "客厅TV Frame人体传感器"
+
+switch.backlit_frame_113a70_backlit_frame_light:
+  friendly_name: "客厅TV Frame背光"
+
+
+# ─── 车库智能插座（TPLink KP125MP2）──────────────────────────
+switch.tplink_kp125mp2:
+  friendly_name: "车库智能插座"
+
+sensor.tplink_kp125mp2_current:
+  friendly_name: "车库插座电流"
+
+sensor.tplink_kp125mp2_current_consumption:
+  friendly_name: "车库插座功率"
+
+sensor.tplink_kp125mp2_voltage:
+  friendly_name: "车库插座电压"
+
+
+# ─── 体重秤 ───────────────────────────────────────────────────
+sensor.mi_smart_scale_ec73_mass:
+  friendly_name: "体重"
+
+
+# ─── 暖通温度传感器 ───────────────────────────────────────────
+sensor.thermostat_temperature:
+  friendly_name: "厨房当前温度"
