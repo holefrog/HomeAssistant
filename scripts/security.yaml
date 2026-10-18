@@ -25,7 +25,7 @@
 # 报警：切换布防状态并播放语音
 # 参数：无
 toggle_arm_alarm:
-  alias: Toggle Arm Alarm and Play Sound
+  alias: 切换布防状态并播放提示音
   mode: single
   sequence:
     - action: input_boolean.toggle
@@ -42,7 +42,7 @@ toggle_arm_alarm:
 # 报警触发：并行启动灯光+Squeezebox+Lumi 全部网关
 # 供 automations/alarm.yaml 中各报警循环调用
 alarm_trigger_all:
-  alias: Alarm Trigger All
+  alias: 触发全部声光报警
   mode: restart
   sequence:
     - parallel:
@@ -59,7 +59,7 @@ alarm_trigger_all:
 # 报警解除：停止全部声光，置位 input_clear
 # 由 Handle actionable notification 调用
 alarm_clear_all:
-  alias: Alarm Clear All
+  alias: 解除全部声光报警
   mode: single
   sequence:
     # 置位退出标志，触发各报警 repeat 循环退出
@@ -85,7 +85,7 @@ alarm_clear_all:
 # 报警通知与声光循环
 # 供各类报警自动化统一调用，避免在自动化中重复编写 repeat until 循环
 alarm_notify_loop:
-  alias: Alarm Notify Loop
+  alias: 循环报警推送与声光
   mode: restart
   fields:
     title:
@@ -96,7 +96,7 @@ alarm_notify_loop:
       required: true
     clear_button_title:
       description: "解除报警按钮文字"
-      default: "✅ Click to clear alarm"
+      default: "✅ 点击解除报警"
     tag:
       description: "通知标签"
       default: "security_alarm"

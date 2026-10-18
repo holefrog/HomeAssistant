@@ -224,3 +224,23 @@ sensor.mi_smart_scale_ec73_mass:
 # ─── 暖通温度传感器 ───────────────────────────────────────────
 sensor.thermostat_temperature:
   friendly_name: "厨房当前温度"
+
+
+# ─── 安防汇总与布防状态 ─────────────────────────────────────────
+binary_sensor.global_door_status:
+  friendly_name: "全局门窗状态汇总"
+
+binary_sensor.global_fire_status:
+  friendly_name: "全局火灾状态汇总"
+
+binary_sensor.global_water_leak_status:
+  friendly_name: "全局漏水状态汇总"
+
+binary_sensor.security_issue_summary:
+  friendly_name: "全局安防问题汇总"
+
+input_boolean.arm_alarm:
+  friendly_name: "离家布防开关"
+
+input_boolean.input_clear:
+  friendly_name: "解除报警标志"
