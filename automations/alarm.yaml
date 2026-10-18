@@ -36,37 +36,14 @@
       {{ trigger.from_state is not none and trigger.to_state is not none and
          trigger.to_state.attributes.count | int(0) > trigger.from_state.attributes.count | int(0) }}
   actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.input_clear
-  - repeat:
-      until:
-      - condition: state
-        entity_id: input_boolean.input_clear
-        state: 'on'
-      sequence:
-      - action: notify.group_phone
-        data:
-          title: Door or window opened!!!
-          message: >
-            {% set lst = expand(label_entities('Security Opening')) | selectattr('state', 'eq', 'on') | list %}
-            {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is open!
-            {% endfor %}{% else %}Door or window open detected, but specific sensor name is unavailable.{% endif %}
-          data:
-            tag: 'security_alarm'
-            actions:
-            - action: CONFIRM_CLEAR
-              title: ✅ Click to clear alarm [Door/Window open]
-      - action: persistent_notification.create
-        data:
-          title: Door or window opened!!!
-          message: >
-            {% set lst = expand(label_entities('Security Opening')) | selectattr('state', 'eq', 'on') | list %}
-            {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is open!
-            {% endfor %}{% else %}Door or window open detected, but specific sensor name is unavailable.{% endif %}
-      - action: script.alarm_trigger_all
-      - delay:
-          seconds: 30
+  - action: script.alarm_notify_loop
+    data:
+      title: "Door or window opened!!!"
+      message: >
+        {% set lst = expand(label_entities('Security Opening')) | selectattr('state', 'eq', 'on') | list %}
+        {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is open!
+        {% endfor %}{% else %}Door or window open detected, but specific sensor name is unavailable.{% endif %}
+      clear_button_title: "✅ Click to clear alarm [Door/Window open]"
 
 
 # -------------------------------------------------------------
@@ -95,7 +72,7 @@
         state: 'on'
       sequence:
       - variables:
-          picname: gun-{{ now().strftime("%Y%m%d-%H%MB%S") }}.jpg
+          picname: gun-{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg
       - delay:
           seconds: 1
       - action: camera.snapshot
@@ -106,12 +83,12 @@
       - action: notify.group_phone
         data:
           title: Cabinet door is open!!!
-          message: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+          message: "枪柜门被打开！抓拍已生成。"
           data:
             tag: 'gun_safe_camera'
             persistent: true
             sticky: true
-            image: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+            image: /local/record/{{ picname }}
             actions:
             - action: CONFIRM_CLEAR
               title: ✅ Click to clear alarm [Cabinet door open]
@@ -119,7 +96,7 @@
         data:
           title: Cabinet door is open!!!
           notification_id: gun_safe_camera
-          message: http://homeassistant.taile4f0bb.ts.net:8123/local/record/{{ picname }}
+          message: "枪柜门被打开，照片已抓拍：![抓拍](/local/record/{{ picname }})"
       - action: script.alarm_trigger_all
       - repeat:
           while:
@@ -159,31 +136,11 @@
     entity_id: input_boolean.arm_alarm
     state: 'on'
   actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.input_clear
-  - repeat:
-      until:
-      - condition: state
-        entity_id: input_boolean.input_clear
-        state: 'on'
-      sequence:
-      - action: notify.group_phone
-        data:
-          title: Alarm
-          message: Gun safe has been opened!!!
-          data:
-            tag: 'security_alarm'
-            actions:
-            - action: CONFIRM_CLEAR
-              title: ✅ Click to clear alarm [Gun safe opened]
-      - action: persistent_notification.create
-        data:
-          title: Alarm
-          message: Gun safe has been opened!!!
-      - action: script.alarm_trigger_all
-      - delay:
-          seconds: 30
+  - action: script.alarm_notify_loop
+    data:
+      title: "Alarm"
+      message: "Gun safe has been opened!!!"
+      clear_button_title: "✅ Click to clear alarm [Gun safe opened]"
 
 
 # -------------------------------------------------------------
@@ -208,63 +165,28 @@
       {{ trigger.from_state is not none and trigger.to_state is not none and
          trigger.to_state.attributes.count | int(0) > trigger.from_state.attributes.count | int(0) }}
   actions:
-  - action: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.input_clear
-  - repeat:
-      until:
-      - condition: state
-        entity_id: input_boolean.input_clear
-        state: 'on'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: trigger_water
       sequence:
-      - choose:
-        - conditions:
-          - condition: trigger
-            id: trigger_water
-          sequence:
-          - action: notify.group_phone
-            data:
-              title: Water leak alarm!!!
-              message: >
-                {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
-                {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is leaking!
-                {% endfor %}{% else %}Water leak detected, but specific sensor name is unavailable.{% endif %}
-              data:
-                tag: 'security_alarm'
-                persistent: true
-                sticky: true
-                actions:
-                - action: CONFIRM_CLEAR
-                  title: ✅ Click to clear alarm [Water leak]
-          - action: persistent_notification.create
-            data:
-              title: Water leak alarm!!!
-              message: >
-                {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
-                {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is leaking!
-                {% endfor %}{% else %}Water leak detected, but specific sensor name is unavailable.{% endif %}
-        - conditions:
-          - condition: trigger
-            id: trigger_fire
-          sequence:
-          - action: notify.group_phone
-            data:
-              title: Fire alarm!!!
-              message: '{{ state_attr("binary_sensor.global_fire_status", "Data") }}'
-              data:
-                tag: 'security_alarm'
-                persistent: true
-                sticky: true
-                actions:
-                - action: CONFIRM_CLEAR
-                  title: ✅ Click to clear alarm [Fire]
-          - action: persistent_notification.create
-            data:
-              title: Fire alarm!!!
-              message: '{{ state_attr("binary_sensor.global_fire_status", "Data") }}'
-      - action: script.alarm_trigger_all
-      - delay:
-          seconds: 30
+      - action: script.alarm_notify_loop
+        data:
+          title: "Water leak alarm!!!"
+          message: >
+            {% set lst = expand(label_entities('Security Water Leak')) | selectattr('state', 'in', ['on', 'On', 'ON', 'wet', 'Wet', 'WET']) | list %}
+            {% if lst | count > 0 %}{% for s in lst %}{{ area_name(s.entity_id) or 'Unknown Area' }}: {{ s.name }} is leaking!
+            {% endfor %}{% else %}Water leak detected, but specific sensor name is unavailable.{% endif %}
+          clear_button_title: "✅ Click to clear alarm [Water leak]"
+    - conditions:
+      - condition: trigger
+        id: trigger_fire
+      sequence:
+      - action: script.alarm_notify_loop
+        data:
+          title: "Fire alarm!!!"
+          message: '{{ state_attr("binary_sensor.global_fire_status", "Data") }}'
+          clear_button_title: "✅ Click to clear alarm [Fire]"
 
 
 
